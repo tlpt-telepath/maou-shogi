@@ -1,0 +1,9 @@
+{
+  "name": "maou-shogi",
+  "version": "1.0.0",
+  "description": "ハイパーエキセントリックギャラクティック、ジャパニーズ・チェス",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  }
+}
