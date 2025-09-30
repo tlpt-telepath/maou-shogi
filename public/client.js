@@ -264,6 +264,9 @@ function renderStatus() {
 }
 
 function renderBoard() {
+  const isFlipped = myColor === COLORS.GOTE;
+  boardEl.classList.toggle('flipped', isFlipped);
+
   const cells = boardEl.children;
   const highlightMap = new Map();
   const dropMap = new Map();
