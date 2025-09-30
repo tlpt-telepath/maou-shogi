@@ -75,6 +75,13 @@ function createClient(socket) {
     onClose: null
   };
 
+  let hasClosed = false;
+  const notifyClosed = () => {
+    if (hasClosed) return;
+    hasClosed = true;
+    if (client.onClose) client.onClose();
+  };
+
   socket.on('data', (chunk) => {
     client.buffer = Buffer.concat([client.buffer, chunk]);
     let frame;
@@ -92,28 +99,50 @@ function createClient(socket) {
     }
   });
 
-  socket.on('close', () => {
-    if (client.onClose) client.onClose();
-  });
+  socket.on('close', notifyClosed);
 
-  socket.on('end', () => {
-    if (client.onClose) client.onClose();
-  });
+  socket.on('end', notifyClosed);
 
   socket.on('error', (err) => {
+    if (err && (err.code === 'EPIPE' || err.code === 'ECONNRESET')) {
+      // Ignore routine disconnect errors but ensure cleanup.
+      notifyClosed();
+      return;
+    }
     console.error('Socket error', err);
-    if (client.onClose) client.onClose();
+    notifyClosed();
   });
 
   client.send = (data) => {
+    if (
+      socket.destroyed ||
+      socket.writableEnded ||
+      socket.writableFinished ||
+      socket.closed === true ||
+      socket.readyState === 'closed'
+    ) {
+      notifyClosed();
+      return;
+    }
     const payload = Buffer.from(JSON.stringify(data));
     const frame = encodeFrame(payload);
-    socket.write(frame);
+    try {
+      socket.write(frame);
+    } catch (err) {
+      if (err && (err.code === 'EPIPE' || err.code === 'ECONNRESET')) {
+        notifyClosed();
+        return;
+      }
+      console.error('Failed to write frame', err);
+      notifyClosed();
+    }
   };
 
   client.close = () => {
     try {
-      socket.end();
+      if (!socket.destroyed) {
+        socket.end();
+      }
     } catch (err) {
       console.error('Error closing socket', err);
     }
