@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>魔王将棋</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header>
+        <h1>魔王将棋</h1>
+        <p class="tagline">王も成れる新時代の将棋。友達とオンラインで対戦しよう。</p>
+      </header>
+      <main>
+        <section id="lobby">
+          <form id="room-form">
+            <div class="form-row">
+              <label for="room-id">部屋ID</label>
+              <input id="room-id" name="room" maxlength="12" placeholder="例: maou99" required />
+            </div>
+            <div class="form-row">
+              <label for="player-name">名前</label>
+              <input id="player-name" name="name" maxlength="12" placeholder="プレイヤー" />
+            </div>
+            <div class="form-row option" id="friendly-toggle">
+              <label>
+                <input type="checkbox" id="friendly-pierce" />
+                魔王(成り王)が味方の駒も貫通できるモードで作成
+              </label>
+            </div>
+            <div class="button-row">
+              <button type="button" id="create-room">部屋を作成</button>
+              <button type="button" id="join-room">参加</button>
+            </div>
+          </form>
+          <div id="lobby-info" class="info"></div>
+        </section>
+        <section id="game" class="hidden">
+          <div class="status-bar">
+            <div>あなた: <span id="player-color">-</span></div>
+            <div>手番: <span id="current-turn">-</span></div>
+            <div>魔王の貫通: <span id="pierce-mode">-</span></div>
+          </div>
+          <div class="game-area">
+            <aside class="captured" id="captured-gote">
+              <h2>後手の持ち駒</h2>
+              <div class="pieces" data-owner="gote"></div>
+            </aside>
+            <div class="board-wrapper">
+              <div id="board" class="board"></div>
+              <div class="controls">
+                <button id="resign-button" type="button">投了</button>
+                <button id="return-lobby" type="button">ロビーに戻る</button>
+              </div>
+              <div id="system-messages" class="system-messages"></div>
+            </div>
+            <aside class="captured" id="captured-sente">
+              <h2>先手の持ち駒</h2>
+              <div class="pieces" data-owner="sente"></div>
+            </aside>
+          </div>
+          <div id="game-result" class="result hidden"></div>
+        </section>
+      </main>
+    </div>
+    <script type="module" src="/client.js"></script>
+  </body>
+</html>
